@@ -1,0 +1,43 @@
+{
+  "action": "opened",
+  "number": 42,
+  "pull_request": {
+    "url": "https://api.github.com/repos/octocat/Hello-World/pulls/42",
+    "id": 123456789,
+    "number": 42,
+    "state": "open",
+    "locked": false,
+    "title": "Update Kubernetes deployment configurations",
+    "user": {
+      "login": "octocat"
+    },
+    "body": "Fixing replicas and resource limits.",
+    "action": "opened",
+    "head": {
+      "label": "octocat:feature-branch",
+      "ref": "feature-branch",
+      "sha": "ec26c3e573e3dd8a280e447b0e5d429a3971e42a",
+      "repo": {
+        "full_name": "octocat/Hello-World"
+      }
+    },
+    "base": {
+      "label": "octocat:main",
+      "ref": "main",
+      "sha": "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15"
+    }
+  },
+  "repository": {
+    "id": 1296269,
+    "name": "Hello-World",
+    "full_name": "octocat/Hello-World",
+    "private": false,
+    "owner": {
+      "login": "octocat"
+    }
+  },
+  "sender": {
+    "login": "octocat",
+    "type": "User"
+  }
+}

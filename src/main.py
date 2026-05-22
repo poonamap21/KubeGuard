@@ -1,19 +1,26 @@
-from fastapi import FastAPI, HTTPException, Request, Response, Status, BackgroundTasks
-from . import github_client
-from . import parser
+from fastapi import FastAPI, HTTPException, Request, Response, status, BackgroundTasks, Header
+from github_client import GitHubClient
+from parser import Parser
 
 app = FastAPI(
     title ="KubeGuard API",
     description="API for KubeGuard, a Kubernetes security tool",
     version="1.0.0",
 )
+
+
+@app.get("/")
+async def root():
+    return {"message": "Welcome to KubeGuard API. Use /gatekeeper/validate to validate Kubernetes manifests in pull requests."}
+
 @app.get("/health")
 async def health_check():
-    
     return {"status": "healthy"}   
 
 @app.post("/gatekeeper/validate")
-async def validate(request: Request, background_tasks: BackgroundTasks):
+async def validate(request: Request, 
+                   background_tasks: BackgroundTasks,
+                   x_git_token: str = Header(None, alias="X-Git-Token")):
     try:
         payload = await request.json()
         # Placeholder for validation logic
@@ -27,12 +34,12 @@ async def validate(request: Request, background_tasks: BackgroundTasks):
                 repo_name = payload["repository"]["full_name"]
                 pr_number = payload["pull_request"]["number"]
                 pull_request_sha = payload["pull_request"]["head"]["sha"]
-                git_token = request.headers.get("X-Git-Token") 
+                git_token = x_git_token 
     
                 if not git_token:
                     return Response(
                         content="Missing authentication token mapping", 
-                        status_code=Status.HTTP_401_UNAUTHORIZED
+                        status_code=status.HTTP_401_UNAUTHORIZED
                     )
                 background_tasks.add_task(
                     process_pipeline_audit, 
@@ -42,16 +49,24 @@ async def validate(request: Request, background_tasks: BackgroundTasks):
                     pull_request_sha
                 )
                 # get the data
-        return Response(content="Validation request received", status_code=Status.HTTP_202_ACCEPTED)
+        return Response(content="Validation request received", status_code=status.HTTP_202_ACCEPTED)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e)) 
+    
 
+@app.get("/repo/{repo_name}/pr/{pr_number}/violations")
+async def get_violations(repo_name: str, pr_number: int):
+    # Placeholder for fetching violations from a database or in-memory store
+    # In a real implementation, this would query the database for violations related to the specified PR
+    return {"repo_name": repo_name, "pr_number": pr_number, "violations": []}
 
 async def process_pipeline_audit(git_token: str, repo_name: str, pr_number: int, pull_request_sha: str):
     # Placeholder for the actual audit logic
     # This function would perform the necessary checks and audits on the pull request
     print(f"Processing pipeline audit for {repo_name} PR #{pr_number} with SHA {pull_request_sha}")
     all_findings = []
+    github_client = GitHubClient(git_token=git_token)
+    parser = Parser()
     # Simulate time-consuming audit process
     yaml_files = github_client.get_modified_yaml_files(repo_name, pr_number, git_token)
     for file_info in yaml_files:

@@ -1,9 +1,9 @@
 # Stage 1: Build dependencies cleanly
 FROM python:3.12-alpine AS builder
 WORKDIR /app
-RUN apk add --no-cache gcc musl-dev libffi-dev
+RUN apk add --no-cache ca-certificates gcc musl-dev libffi-dev
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --user --no-cache-dir -r requirements.txt
 
 # Stage 2: Hardened runtime environment 
 FROM python:3.12-alpine
