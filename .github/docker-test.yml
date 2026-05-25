@@ -1,0 +1,46 @@
+name: Docker Build and Run KubeGuard
+on:
+  push:
+    branches: ["main"]
+    paths: ['api/**']
+  workflow_dispatch:
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: |
+          docker build -t kubeguard:latest .
+
+      - name: Run Docker Container
+        run: |
+          docker run -d -p 8081:8080 --name kubeguard-api-container kubeguard:latest
+
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8081/healthz; then
+              echo "API is ready!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "API did not become ready in time."
+          exit 1
+      
+      - name: Run API Verification Check
+        run: |
+            # Send a live request to confirm your FastAPI endpoints respond correctly
+            curl -v http://localhost:8081/docs
+
+      - name: Fetch Container Container Logs (Cleanup/Debugging)
+        if: always()
+        run: |
+          echo "=== Container Logs ==="
+          docker logs kubeguard
+ 
