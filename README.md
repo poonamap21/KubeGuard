@@ -9,6 +9,7 @@ An event-driven Python microservice that automatically audits Kubernetes manifes
 - **Customizable Rules**: You can customize the security rules and policies that KubeGuard
 uses for auditing, tailoring it to your organization's specific security requirements.
 - **Integration with CI/CD**: KubeGuard can be integrated into your CI/CD pipeline, ensuring that all Kubernetes manifests and Helm charts are audited as part of your deployment process.
+
 ## Installation
 
 docker build -t kubeguard:latest .  
