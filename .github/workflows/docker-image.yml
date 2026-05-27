@@ -23,7 +23,7 @@ jobs:
     - name: Verify FastAPI is running
       run: |
         # Give the FastAPI application a couple of seconds to spin up
-        sleep 5
+        sleep 10
         # Test the health/docs endpoint to ensure the API is active
         curl -f http://localhost:8081/docs
 
