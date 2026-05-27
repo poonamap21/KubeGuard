@@ -1,0 +1,30 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag kubeguard:latest
+      
+    - name: Run the Docker image
+      run: docker run --name kubeguard-runner -d -p 8081:8000 kubeguard:latest
+
+    - name: Verify FastAPI is running
+      run: |
+        # Give the FastAPI application a couple of seconds to spin up
+        sleep 5
+        # Test the health/docs endpoint to ensure the API is active
+        curl -f http://localhost:8081/docs
+
+      
