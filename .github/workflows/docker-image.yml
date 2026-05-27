@@ -25,6 +25,6 @@ jobs:
         # Give the FastAPI application a couple of seconds to spin up
         sleep 10
         # Test the health/docs endpoint to ensure the API is active
-        curl -f http://localhost:8081/docs
+        curl -f http://127.0.0.1:8081/docs || (docker logs kubeguard && exit 1)
 
       
